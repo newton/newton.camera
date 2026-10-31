@@ -20,6 +20,7 @@ albums:
     url: https://adobe.ly/3RXtJvi
     # title defaults to the album name: "Polina Tereshina, Macedonia Institute residency, 2023"
     year: 2023
+    sort: 1
 
   - url: https://adobe.ly/3mYw7Vp
     slug: david-e-kearns
