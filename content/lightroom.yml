@@ -23,3 +23,7 @@ albums:
 #    title: Joe Feddersen                        # optional, defaults to the album name
 #    year: 2025                                  # optional
 #    description: Prints and glass for a retrospective catalog.   # optional
+#    artist: Joe Feddersen                       # optional, defaults to the album name before the first comma
+#    project: Retrospective catalog              # optional, defaults to the rest of the album name
+#    sort: 1                                     # optional, position in the index (lower comes first)
+#    hidden: true                                # optional, keep syncing but leave it off the site
