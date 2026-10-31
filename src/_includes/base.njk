@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% if title %}{{ title }} — {% endif %}{{ site.name }}</title>
+  <meta name="description" content="{{ description or site.intro | striptags | truncate(155) }}">
+  <link rel="canonical" href="{{ site.url }}{{ page.url }}">
+  <meta property="og:title" content="{{ title or site.name }}">
+  <meta property="og:description" content="{{ description or site.intro | striptags | truncate(155) }}">
+  {% if ogImage %}<meta property="og:image" content="{{ site.url }}{{ ogImage }}">{% endif %}
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preload" href="/assets/fonts/host-grotesk-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/assets/site.css">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+</head>
+<body class="{{ bodyClass }}">
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="masthead">
+    <a class="wordmark" href="/">{{ site.name }}</a>
+    <nav aria-label="Main">
+      <a href="/" {% if section == "index" %}aria-current="page"{% endif %}>Index</a>
+      <a href="/about/" {% if section == "about" %}aria-current="page"{% endif %}>Information</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    {{ content | safe }}
+  </main>
+
+  <footer class="colophon">
+    <p>{{ site.name }}, {{ site.city }}. Photographs © {{ build.year }} {{ site.name }}.</p>
+    <p>Artworks remain the copyright of the artists and are shown with their permission.</p>
+  </footer>
+  <script src="/assets/site.js" defer></script>
+</body>
+</html>

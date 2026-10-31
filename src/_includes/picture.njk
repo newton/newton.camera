@@ -1,0 +1,9 @@
+{# Responsive photo. Pass `p` (a photo) and `sizes`. #}
+<picture>
+  <source type="image/avif" srcset="{{ p.sources.avif }}" sizes="{{ sizes }}">
+  <source type="image/webp" srcset="{{ p.sources.webp }}" sizes="{{ sizes }}">
+  <img src="{{ p.fallback }}" srcset="{{ p.sources.jpeg }}" sizes="{{ sizes }}"
+       width="{{ p.width }}" height="{{ p.height }}"
+       alt="{{ p.title or ((g.artist + ', plate ' + p.index) if g else ('Plate ' + p.index)) }}{% if p.caption %}. {{ p.caption }}{% endif %}"
+       loading="{{ loading or 'lazy' }}" decoding="async">
+</picture>

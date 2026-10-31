@@ -1,0 +1,84 @@
+---
+layout: base.njk
+bodyClass: record
+section: index
+pagination:
+  data: galleries
+  size: 1
+  alias: g
+permalink: "/work/{{ g.slug }}/"
+eleventyComputed:
+  title: "{{ g.artist }}{% if g.project %}, {{ g.project }}{% endif %}"
+  description: "{{ g.description }}"
+  ogImage: "{{ g.cover.fallback }}"
+---
+<article class="record-page">
+  <header class="record-head">
+    <h1>{{ g.artist }}</h1>
+    {% if g.project %}<p class="project-line">{{ g.project }}</p>{% endif %}
+    {% if g.description %}<p class="record-desc">{{ g.description }}</p>{% endif %}
+    <p class="record-meta">
+      {{ g.photos.length }} photographs{% if g.year and (g.year | string) not in g.project %}, {{ g.year }}{% endif %}.
+      {% if g.credit %}Artwork {{ g.credit }}.{% endif %}
+      Photographed by {{ site.name }}.
+    </p>
+    <p class="views" role="group" aria-label="View">
+      <a href="#plates" data-view-link="plates" aria-current="true">Plates</a>
+      <a href="#contact-sheet" data-view-link="sheet">Contact sheet</a>
+    </p>
+  </header>
+
+  <ol class="plates" id="plates" data-view="plates">
+    {% for p in g.photos %}
+    <li class="plate" id="plate-{{ p.index }}" style="--r: {{ p.ratio }}">
+      <figure>
+        <a class="plate-img" href="{{ p.large }}" data-lightbox data-index="{{ loop.index0 }}" data-title="{{ p.title }}" data-caption="{{ p.caption }}" aria-label="View plate {{ p.index }} full screen">
+          {% set sizes = "(min-width: 1100px) 1100px, 94vw" %}
+          {% set loading = "eager" if loop.index <= 2 else "lazy" %}
+          {% include "picture.njk" %}
+        </a>
+        <figcaption>
+          <span class="plate-no">{{ p.index }}</span>
+          <span class="plate-text">
+            {% if p.title %}<cite>{{ p.title }}</cite>{% endif %}
+            {% if p.caption %}<span>{{ p.caption }}</span>{% endif %}
+          </span>
+        </figcaption>
+      </figure>
+    </li>
+    {% endfor %}
+  </ol>
+
+  <ol class="sheet" id="contact-sheet" data-view="sheet" hidden>
+    {% for p in g.photos %}
+    <li style="--r: {{ p.ratio }}">
+      <a href="{{ p.large }}" data-lightbox data-index="{{ loop.index0 }}" aria-label="View plate {{ p.index }} full screen">
+        <img src="{{ p.thumb }}" width="{{ p.width }}" height="{{ p.height }}" alt="" loading="lazy">
+      </a>
+      <span>{{ p.index }}</span>
+    </li>
+    {% endfor %}
+  </ol>
+
+  <nav class="record-nav" aria-label="More work">
+    {% set i = pagination.pageNumber %}
+    {% if pagination.href.previous %}<a href="{{ pagination.href.previous }}">Previous: {{ galleries[i - 1].artist }}</a>{% else %}<span></span>{% endif %}
+    {% if pagination.href.next %}<a href="{{ pagination.href.next }}">Next: {{ galleries[i + 1].artist }}</a>{% endif %}
+  </nav>
+
+</article>
+
+<div class="wall-label" aria-hidden="true">
+  <span>{{ g.artist }}</span>
+  <span class="counter" data-total="{{ g.photos.length }}">1 / {{ g.photos.length }}</span>
+</div>
+
+<div class="lightbox" hidden role="dialog" aria-modal="true" aria-label="Photograph viewer">
+  <img alt="">
+  <p class="lb-caption"></p>
+  <div class="lb-controls">
+    <button class="lb-prev" type="button">Previous</button>
+    <button class="lb-next" type="button">Next</button>
+    <button class="lb-close" type="button">Close</button>
+  </div>
+</div>

@@ -1,0 +1,25 @@
+---
+layout: base.njk
+title: Information
+section: about
+bodyClass: about
+permalink: /about/
+---
+<article class="about-page">
+  <h1>Information</h1>
+  <div class="about-body">
+    {{ site.about | paras | safe }}
+  </div>
+
+  <section aria-labelledby="services-h" class="services">
+    <h2 id="services-h">What I photograph</h2>
+    <ul>{% for s in site.services %}<li>{{ s }}</li>{% endfor %}</ul>
+  </section>
+
+  <section id="contact" aria-labelledby="contact-h" class="contact">
+    <h2 id="contact-h">Contact</h2>
+    <p>{{ site.contact.note }}</p>
+    <p class="contact-email"><a href="mailto:{{ site.contact.email }}">{{ site.contact.email }}</a></p>
+    {% if site.contact.instagram %}<p><a href="https://instagram.com/{{ site.contact.instagram }}">Instagram</a></p>{% endif %}
+  </section>
+</article>

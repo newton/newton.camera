@@ -1,0 +1,80 @@
+# Builds the site and publishes it to GitHub Pages.
+#
+# Runs when:
+#   - you push a change (new photos, edited text, design changes)
+#   - you press "Run workflow" on the Actions tab  ← use this after editing an album in Lightroom
+#   - every night at 3:17 Pacific (picks up Lightroom album changes automatically)
+name: Publish site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: "17 10 * * *"
+
+permissions:
+  contents: write   # to commit synced photos back to the repo
+  pages: write
+  id-token: write
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Check for Lightroom albums
+        id: lr
+        run: |
+          if grep -qE '^\s*-\s*slug:' content/lightroom.yml; then echo "has=true" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Sync from Lightroom
+        if: steps.lr.outputs.has == 'true' && github.event_name != 'push'
+        continue-on-error: true   # a Lightroom hiccup should never take the site down
+        run: |
+          npx playwright install --with-deps chromium
+          npm run sync
+
+      - name: Save synced photos to the repo
+        if: steps.lr.outputs.has == 'true' && github.event_name != 'push'
+        run: |
+          git config user.name "newton.camera bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add content/galleries
+          git diff --cached --quiet || (git commit -m "Sync galleries from Lightroom" && git push)
+
+      # Resized images are cached between runs so only new photos get processed.
+      - uses: actions/cache@v4
+        with:
+          path: _site/img
+          key: img-${{ hashFiles('content/galleries/**') }}
+          restore-keys: img-
+
+      - id: pages
+        uses: actions/configure-pages@v5
+
+      - run: npm run build
+        env:
+          PATH_PREFIX: ${{ steps.pages.outputs.base_path }}/
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deploy
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,33 @@
+# Everything written on the site that isn't a photo lives here.
+# Edit, commit, and the site rebuilds.
+
+name: Michael Newton
+tagline: michael newton's 24 hour art services
+url: https://newton.camera
+city: Seattle
+
+intro: >-
+  I photograph artwork and objects with high accuracy for catalogs and
+  reproduction. Paintings, works on paper, glass, sculpture and ephemera,
+  in the studio or on site.
+
+about: |
+  I live in Seattle and make photographs of other people's work: paintings
+  for catalogs, prints for giclée editions, objects for archives and books.
+
+  The job is to make the photograph disappear. Every session is shot to a
+  color target and profiled, so what you see on the page matches what hangs
+  on the wall. Cross-polarized lighting for glossy and textured surfaces,
+  stitched captures for large works, and files delivered ready for press.
+
+services:
+  - Catalog and archive photography
+  - Fine-art reproduction and giclée-ready files
+  - Large works captured in stitched tiles
+  - Objects, glass and sculpture
+  - On-site capture at studios, galleries and collections
+
+contact:
+  email: hello@newton.camera
+  instagram: ""      # e.g. newton.camera (leave empty to hide)
+  note: Tell me what the work is, how many pieces, and where the files are headed.

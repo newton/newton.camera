@@ -1,0 +1,36 @@
+---
+layout: base.njk
+bodyClass: home
+section: index
+---
+{% set first = galleries[0] %}
+<section class="stage" aria-hidden="true">
+  {% for g in galleries %}
+  <img class="stage-img{% if loop.first %} is-on{% endif %}" data-for="{{ g.slug }}"
+       src="{{ g.cover.fallback }}" srcset="{{ g.cover.sources.jpeg }}" sizes="60vw"
+       width="{{ g.cover.width }}" height="{{ g.cover.height }}" alt="" {% if not loop.first %}loading="lazy"{% endif %}>
+  {% endfor %}
+</section>
+
+<section class="home-foot">
+  <p class="statement">{{ site.intro }}</p>
+
+  <div class="index">
+    <h1 class="sr">Index of work</h1>
+    {% if galleries.length %}
+    <ol class="records">
+      {% for g in galleries %}
+      <li>
+        <a href="/work/{{ g.slug }}/" data-stage="{{ g.slug }}">
+          <span class="r-artist">{{ g.artist }}</span>
+          <span class="r-project">{{ g.project or g.year }}</span>
+          <span class="r-count">{{ g.photos.length }}</span>
+        </a>
+      </li>
+      {% endfor %}
+    </ol>
+    {% else %}
+    <p class="muted">Nothing here yet. Add a folder of photos to <code>content/galleries/</code> or a Lightroom album link to <code>content/lightroom.yml</code>.</p>
+    {% endif %}
+  </div>
+</section>

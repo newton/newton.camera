@@ -1,0 +1,169 @@
+/* newton.camera
+   Photographs of other artists' work. The site recedes: a pale fog-gray field,
+   one typeface at one size, and the works themselves, shown whole and small
+   enough to be looked at rather than at. Information is quiet and partly withheld
+   until asked for. Titles of works are in italics, as in a catalogue. */
+
+@font-face { font-family: "Host Grotesk"; font-weight: 400; font-style: normal; font-display: swap; src: url(fonts/host-grotesk-latin-400-normal.woff2) format("woff2"); }
+@font-face { font-family: "Host Grotesk"; font-weight: 400; font-style: italic; font-display: swap; src: url(fonts/host-grotesk-latin-400-italic.woff2) format("woff2"); }
+@font-face { font-family: "Host Grotesk"; font-weight: 500; font-style: normal; font-display: swap; src: url(fonts/host-grotesk-latin-500-normal.woff2) format("woff2"); }
+
+:root {
+  --fog:      #e7e7e4;   /* the field everything sits in */
+  --graphite: #262624;   /* text */
+  --ash:      #63635d;   /* secondary text, 4.6:1 on fog */
+  --hair:     #cfcfcb;   /* the only line weight */
+
+  --font: "Host Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --size: 0.9375rem;     /* one size for all text */
+  --lead: 1.45;
+
+  --edge: clamp(1rem, 2.4vw, 2rem);   /* distance from the window edge */
+  --slow: 1.2s cubic-bezier(.25, .1, .25, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  font: 400 var(--size)/var(--lead) var(--font);
+  color: var(--graphite);
+  background: var(--fog);
+  font-variant-numeric: lining-nums;
+}
+img { display: block; max-width: 100%; height: auto; }
+a { color: inherit; text-decoration: none; }
+a:hover { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .2em; }
+:focus-visible { outline: 1px solid var(--graphite); outline-offset: 4px; }
+h1, h2 { font: inherit; margin: 0; }
+p { margin: 0 0 1em; }
+cite { font-style: italic; }
+.muted { color: var(--ash); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.skip { position: absolute; left: var(--edge); top: -4rem; background: var(--graphite); color: var(--fog); padding: .3rem .6rem; z-index: 30; }
+.skip:focus { top: .75rem; }
+
+/* masthead: pinned to the corners, like a label on a wall */
+.masthead {
+  position: fixed; inset: 0 0 auto 0; z-index: 10;
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: var(--edge);
+  pointer-events: none;
+}
+.masthead a, .masthead nav { pointer-events: auto; }
+.masthead nav { display: flex; gap: 1.25rem; }
+.masthead nav a { color: var(--ash); }
+.masthead nav a:hover, .masthead nav a[aria-current="page"] { color: var(--graphite); }
+
+main { padding: 0 var(--edge); }
+
+/* ---------- home ---------- */
+/* One work in the middle of an empty field. Point at a name and its work takes the place. */
+.stage {
+  height: 100vh; height: 100svh;
+  display: grid; place-items: center;
+  padding: 5rem 0 clamp(9rem, 26vh, 15rem);
+}
+.stage-img {
+  grid-area: 1 / 1;
+  max-height: min(56vh, 640px); max-width: min(56vw, 760px); width: auto; height: auto;
+  opacity: 0; transition: opacity var(--slow);
+}
+.stage-img.is-on { opacity: 1; }
+
+.home-foot {
+  position: absolute; left: var(--edge); right: var(--edge); bottom: var(--edge);
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2rem;
+  align-items: end;
+}
+.statement { max-width: 24rem; color: var(--ash); margin: 0; }
+.records { list-style: none; margin: 0; padding: 0; }
+.records a { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) 2rem; gap: 1.5rem; padding: .1rem 0; }
+.records a:hover { text-decoration: none; }
+.r-project { color: var(--ash); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.r-count { color: var(--ash); text-align: right; font-variant-numeric: tabular-nums; }
+/* when one name is in focus, the others step back */
+.records:hover a, .records:focus-within a { opacity: .38; transition: opacity .3s; }
+.records:hover a:hover, .records:focus-within a:focus-visible { opacity: 1; }
+
+/* ---------- record ---------- */
+.record-head { padding: clamp(7rem, 22vh, 12rem) 0 0; max-width: 30rem; }
+.project-line { color: var(--ash); margin: 0 0 1.5rem; }
+.record-desc { margin-bottom: 1.5rem; }
+.record-meta { color: var(--ash); }
+.views { display: flex; gap: 1.25rem; margin: 1.5rem 0 0; }
+.views a { color: var(--ash); }
+.views a[aria-current="true"] { color: var(--graphite); }
+
+/* each work gets the whole window to itself */
+.plates { list-style: none; margin: 0; padding: 0; }
+.plate {
+  min-height: 100vh; min-height: 100svh;
+  display: grid; place-items: center;
+  padding: 4rem 0;
+}
+.plate figure { margin: 0; width: min(72vw, calc(70vh * var(--r)), 1000px); }
+.plate-img { display: block; cursor: zoom-in; }
+.plate-img img { width: 100%; opacity: 0; transition: opacity var(--slow); }
+.plate-img img.is-loaded { opacity: 1; }
+.plate figcaption { display: flex; gap: .75rem; padding-top: .6rem; color: var(--ash); min-height: 1.45em; }
+.plate-no { font-variant-numeric: tabular-nums; }
+.plate-text { display: flex; flex-direction: column; color: var(--graphite); }
+.plate-text span { color: var(--ash); }
+
+/* contact sheet: everything at once, small */
+.sheet { list-style: none; margin: 0; padding: clamp(4rem, 10vh, 7rem) 0 6rem; display: flex; flex-wrap: wrap; gap: 2.5rem 2rem; align-items: flex-end; }
+.sheet[hidden], .plates[hidden] { display: none; }
+.sheet img { height: clamp(90px, 11vw, 150px); width: auto; }
+.sheet span { display: block; margin-top: .3rem; color: var(--ash); font-variant-numeric: tabular-nums; }
+
+/* the wall label: artist and position, always in the corner while you look */
+.wall-label {
+  position: fixed; left: var(--edge); right: var(--edge); bottom: var(--edge); z-index: 10;
+  display: flex; justify-content: space-between; pointer-events: none;
+}
+.counter { color: var(--ash); font-variant-numeric: tabular-nums; }
+
+.record-nav { display: flex; justify-content: space-between; gap: 1rem; padding: 4rem 0 0; color: var(--ash); }
+.record-nav a:hover { color: var(--graphite); }
+
+/* viewer */
+.lightbox {
+  position: fixed; inset: 0; z-index: 40; background: var(--fog);
+  display: grid; grid-template-rows: 1fr auto; justify-items: center; align-items: center;
+  padding: 3rem var(--edge) var(--edge);
+}
+.lightbox[hidden] { display: none; }
+.lightbox img { max-width: 100%; max-height: calc(100vh - 7rem); width: auto; height: auto; object-fit: contain; cursor: e-resize; }
+.lb-caption { position: absolute; left: var(--edge); bottom: var(--edge); margin: 0; max-width: 40%; color: var(--ash); }
+.lb-controls { position: absolute; right: var(--edge); bottom: var(--edge); display: flex; gap: 1.25rem; }
+.lb-controls button { background: none; border: 0; padding: 0; font: inherit; color: var(--graphite); cursor: pointer; }
+.lb-controls button:hover { text-decoration: underline; text-underline-offset: .2em; }
+
+/* ---------- information ---------- */
+.about-page { max-width: 30rem; padding: clamp(7rem, 22vh, 12rem) 0 0; }
+.about-page h1 { margin-bottom: 2rem; color: var(--ash); }
+.about-body p { margin-bottom: 1.2em; }
+.services, .contact { margin-top: 3rem; }
+.services h2, .contact h2 { color: var(--ash); margin-bottom: .5rem; }
+.services ul { margin: 0; padding: 0; list-style: none; }
+.contact-email { margin-top: .5rem; }
+
+/* footer */
+.colophon { padding: 8rem var(--edge) 4.5rem; color: var(--ash); max-width: 34rem; }
+.colophon p { margin: 0 0 .2rem; }
+body.home .colophon { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .stage-img, .plate-img img, .records a { transition: none; }
+}
+
+@media (max-width: 760px) {
+  .stage { height: 70vh; height: 70svh; padding: 4rem 0 1rem; }
+  .stage-img { max-width: 84vw; max-height: 52svh; }
+  .home-foot { position: static; grid-template-columns: 1fr; padding-bottom: var(--edge); }
+  .records a { grid-template-columns: minmax(0, 1fr) 2rem; }
+  .r-project { display: none; }
+  .plate figure { width: 100%; }
+  .lb-caption { max-width: 55%; }
+}

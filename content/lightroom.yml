@@ -1,0 +1,22 @@
+# Galleries published straight from Lightroom (cloud).
+#
+# In Lightroom: right-click an album → Share & Invite → Link access: "Anyone can view"
+# → copy the link and paste it below. Then run "Publish site" on GitHub
+# (Actions tab → Publish site → Run workflow), or wait for the nightly run.
+#
+# Order in the album = order on the site. Title and Caption you type in
+# Lightroom's Info panel become each photo's title and caption.
+# Remove an entry to stop syncing that album (its photos stay until you delete the folder).
+
+albums:
+  - slug: polina-tereshina-macedonia-2023
+    url: https://adobe.ly/3RXtJvi
+    # title defaults to the album name: "Polina Tereshina, Macedonia Institute residency, 2023"
+    year: 2023
+
+# More albums follow the same pattern:
+#  - slug: joe-feddersen                         # folder name and URL: /work/joe-feddersen/
+#    url: https://adobe.ly/xxxxxxx               # or https://lightroom.adobe.com/shares/...
+#    title: Joe Feddersen                        # optional, defaults to the album name
+#    year: 2025                                  # optional
+#    description: Prints and glass for a retrospective catalog.   # optional
