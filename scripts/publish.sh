@@ -42,10 +42,12 @@ if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
   exit 0
 fi
 
-token="${GITHUB_TOKEN:-}"
+token="${GITHUB_TOKEN:-}"; source_name="GITHUB_TOKEN (set in your shell)"
 if [[ -z "$token" ]] && command -v security >/dev/null 2>&1; then
   token="$(security find-generic-password -s newton-camera-publish -w 2>/dev/null || true)"
+  source_name='your Keychain ("newton-camera-publish")'
 fi
+token="$(printf '%s' "$token" | tr -d '[:space:]')"   # stray spaces/newlines from pasting
 if [[ -z "$token" ]]; then
   echo "Can't sign in to GitHub. Either log in with the GitHub CLI (gh auth login), or save a token:" >&2
   echo "  security add-generic-password -a \"\$USER\" -s newton-camera-publish -w" >&2
@@ -62,11 +64,20 @@ status="$(curl -sS -o /tmp/newton-publish.$$ -w '%{http_code}' -X POST \
 body="$(cat /tmp/newton-publish.$$ 2>/dev/null || true)"; rm -f /tmp/newton-publish.$$
 
 if [[ "$status" == "204" ]]; then
+  echo "Signed in with the token from $source_name."
   echo "Publishing $REPO. Progress: https://github.com/$REPO/actions/workflows/$WORKFLOW"
   $WATCH && echo "(--watch needs the GitHub CLI; open the link above to follow along.)"
 else
   echo "GitHub said $status: $body" >&2
-  [[ "$status" == "401" ]] && echo "The token was refused. It may have expired." >&2
+  if [[ "$status" == "401" ]]; then
+    echo "GitHub doesn't recognise the token from $source_name (wrong, incomplete, expired or revoked)." >&2
+    if [[ -n "${GITHUB_TOKEN:-}" ]]; then
+      echo "To use the Keychain token instead, clear the shell one:  unset GITHUB_TOKEN" >&2
+      echo "(and remove any 'export GITHUB_TOKEN=' line from ~/.zshrc)" >&2
+    else
+      echo "Replace the saved token with:  security add-generic-password -U -a \"\$USER\" -s newton-camera-publish -w" >&2
+    fi
+  fi
   [[ "$status" == "403" || "$status" == "404" ]] && echo "Check the token covers $REPO with \"Actions: Read and write\"." >&2
   exit 1
 fi
