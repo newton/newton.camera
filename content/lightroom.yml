@@ -19,7 +19,7 @@ albums:
   - slug: polina-bertou-macedonia-2023
     url: https://adobe.ly/3RXtJvi
     artist: Polina Bertou
-    sort: 1
+    sort: 2
     links:
       - https://www.polinabertou.com
       - https://www.instagram.com/polinabertou
@@ -33,6 +33,8 @@ albums:
   - url: https://adobe.ly/3mYw7Vp
     slug: david-e-kearns
     artist: David E. Kearns
+    links:
+    - https://www.instagram.com/davidekearns_studio/
     represented_by:
       - name: studio e gallery
         links:
@@ -46,6 +48,18 @@ albums:
       - https://katkowski.com
       - https://www.instagram.com/robkatkowski
 
+
+  - url: https://adobe.ly/41Cm6fr
+    slug: joe-feddersen
+    artist: Joe Feddersen
+    links:
+      - https://www.joefeddersen.com
+      - https://www.instagram.com/joe_feddersen/
+    represented_by:
+      - name: studio e gallery
+        links:
+          - https://studioegallery.net
+          - https://www.instagram.com/studioegallery
 
 
 # More albums follow the same pattern:
