@@ -18,7 +18,14 @@ export default function (eleventyConfig) {
 
   eleventyConfig.addFilter("pad", (n, w = 2) => String(n).padStart(w, "0"));
 
-  eleventyConfig.addGlobalData("build", () => ({ year: new Date().getFullYear() }));
+  // Asset version: changes whenever site.css or site.js changes, so browsers fetch the new file.
+  eleventyConfig.addGlobalData("build", async () => {
+    const { createHash } = await import("node:crypto");
+    const fs = await import("node:fs/promises");
+    const h = createHash("sha1");
+    for (const f of ["src/assets/site.css", "src/assets/site.js"]) h.update(await fs.readFile(f));
+    return { year: new Date().getFullYear(), v: h.digest("hex").slice(0, 8) };
+  });
 
   // Delete resized images that no page references any more (removed or re-edited photos).
   eleventyConfig.on("eleventy.after", async ({ results, dir }) => {

@@ -91,12 +91,16 @@ main { padding: 0 var(--edge); }
 .project-line { color: var(--ash); margin: 0 0 1.5rem; }
 .record-desc { margin-bottom: 1.5rem; }
 .record-meta { color: var(--ash); }
-.record-links { margin: 1.5rem 0 0; display: grid; gap: .75rem; }
+.record-links { margin: 1.5rem 0 0; display: grid; gap: .35rem; }
 .record-links div { display: grid; grid-template-columns: 8.5rem minmax(0, 1fr); gap: 1rem; }
 .record-links dt { color: var(--ash); }
 .record-links dd { margin: 0; }
-.record-links ul { list-style: none; margin: 0; padding: 0; }
-.record-links a { overflow-wrap: anywhere; }
+/* links run on like a catalogue credit: a, b, c; a gallery's links sit in parentheses after its name */
+.runon a { display: inline-block; white-space: nowrap; }   /* lines break between links, never inside one */
+.runon a:not(:last-child)::after { content: ","; color: var(--ash); margin-right: .3em; }
+.runon.paren a:first-child::before { content: "("; color: var(--ash); }
+.runon.paren a:last-child::after { content: ")"; color: var(--ash); }
+.gallery-credit-line { display: block; }
 .record-links a:hover { text-decoration: underline; text-underline-offset: .2em; }
 .views { display: flex; gap: 1.25rem; margin: 1.5rem 0 0; }
 .views a { color: var(--ash); }
@@ -173,6 +177,7 @@ body.home .colophon { display: none; }
   .r-project { display: none; }
   .plate figure { width: 100%; }
   .lb-caption { max-width: 55%; }
+  .record-links div { grid-template-columns: 1fr; gap: 0; }
   /* on small screens the corner label gets its own strip instead of sitting on the work */
   .wall-label { left: 0; right: 0; bottom: 0; padding: .55rem var(--edge); background: var(--fog); }
   .plate { padding-bottom: 3.5rem; }

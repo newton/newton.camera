@@ -11,7 +11,7 @@
   {% if ogImage %}<meta property="og:image" content="{{ site.url }}{{ ogImage }}">{% endif %}
   <meta name="twitter:card" content="summary_large_image">
   <link rel="preload" href="/assets/fonts/host-grotesk-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/assets/site.css">
+  <link rel="stylesheet" href="/assets/site.css?v={{ build.v }}">
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 </head>
 <body class="{{ bodyClass }}">
@@ -32,6 +32,6 @@
     <p>{{ site.name }}, {{ site.city }}. Photographs © {{ build.year }} {{ site.name }}.</p>
     <p>Artworks remain the copyright of the artists and are shown with their permission.</p>
   </footer>
-  <script src="/assets/site.js" defer></script>
+  <script src="/assets/site.js?v={{ build.v }}" defer></script>
 </body>
 </html>
