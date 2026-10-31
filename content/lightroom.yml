@@ -50,6 +50,7 @@ albums:
 
 
   - url: https://adobe.ly/41Cm6fr
+    sort: 1
     slug: joe-feddersen
     artist: Joe Feddersen
     links:
