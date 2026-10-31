@@ -6,7 +6,8 @@
     "dev": "eleventy --serve",
     "build": "eleventy",
     "sync": "node scripts/sync-lightroom.mjs",
-    "samples": "node scripts/dev/make-samples.mjs"
+    "samples": "node scripts/dev/make-samples.mjs",
+    "deploy": "scripts/publish.sh"
   },
   "keywords": [],
   "author": "",
