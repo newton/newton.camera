@@ -1,5 +1,6 @@
 node_modules/
 _site/
+content/lightroom/
 .DS_Store
 
 .idea/

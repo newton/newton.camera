@@ -9,7 +9,8 @@ Cloudflare Pages, S3, or a $5 server.
 content/                 ← what you edit day to day
   site.yml               all the words: intro, about, services, contact
   lightroom.yml          Lightroom album links to publish
-  galleries/<slug>/      one folder per project: photos + optional gallery.yml
+  galleries/<slug>/      projects you export yourself: photos + optional gallery.yml (in git)
+  lightroom/<slug>/      albums downloaded by the sync (not in git, see below)
 src/                     ← the design: yours to change
   index.njk              home page (one work on the stage + index of artists)
   work.njk               a record page per artist/project (plates + contact sheet)
@@ -43,8 +44,21 @@ You can use either route, and you can mix them on the same site.
 4. On GitHub, open **Actions → Publish site → Run workflow**. A few minutes later the gallery is live.
 
 After that, any change you make in Lightroom (adding photos, reordering, retouching,
-fixing a caption) shows up on the site after the nightly run. Press **Run workflow**
-if you don't want to wait.
+renaming the album, fixing a caption) shows up on the site after the nightly run. Press
+**Run workflow** if you don't want to wait.
+
+Synced photos are never committed to the repo, so your history stays code-only and
+`git pull` never fights with the sync. Each publish run starts from the previous run's
+photos (kept in the GitHub Actions cache), pulls changes from Lightroom, and saves the
+result for next time. If Lightroom can't be reached, the previous copy goes out. Remove an
+album from `lightroom.yml` and it leaves the site on the next publish.
+
+To see synced albums when running the site on your computer:
+```bash
+npx playwright install chromium   # once
+npm run sync
+npm run dev
+```
 
 **What to expect:** Adobe doesn't offer a public API for shared albums. The sync opens
 your share link the same way a visitor's browser does and saves the 2048px versions

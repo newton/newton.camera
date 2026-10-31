@@ -4,6 +4,10 @@
 #   - you push a change (new photos, edited text, design changes)
 #   - you press "Run workflow" on the Actions tab  ← use this after editing an album in Lightroom
 #   - every night at 3:17 Pacific (picks up Lightroom album changes automatically)
+#
+# Photos from Lightroom albums are never committed to the repo. Each run starts from the
+# previous run's copy (kept in the Actions cache), syncs changes from Lightroom, and saves
+# the result for next time. If Lightroom can't be reached, the previous copy is published.
 name: Publish site
 
 on:
@@ -14,7 +18,7 @@ on:
     - cron: "17 10 * * *"
 
 permissions:
-  contents: write   # to commit synced photos back to the repo
+  contents: read
   pages: write
   id-token: write
 
@@ -38,32 +42,28 @@ jobs:
 
       - run: npm ci
 
+      # Last run's Lightroom photos and resized images.
+      - name: Restore photos from the last run
+        uses: actions/cache/restore@v6
+        with:
+          path: |
+            content/lightroom
+            _site/img
+          key: site-${{ github.run_id }}
+          restore-keys: site-
+
       - name: Check for Lightroom albums
         id: lr
         run: |
           if grep -qE '^\s*-\s*slug:' content/lightroom.yml; then echo "has=true" >> "$GITHUB_OUTPUT"; fi
 
+      - name: Install browser for the sync
+        if: steps.lr.outputs.has == 'true'
+        run: npx playwright install --with-deps chromium
+
       - name: Sync from Lightroom
-        if: steps.lr.outputs.has == 'true' && github.event_name != 'push'
         continue-on-error: true   # a Lightroom hiccup should never take the site down
-        run: |
-          npx playwright install --with-deps chromium
-          npm run sync
-
-      - name: Save synced photos to the repo
-        if: steps.lr.outputs.has == 'true' && github.event_name != 'push'
-        run: |
-          git config user.name "newton.camera bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add content/galleries
-          git diff --cached --quiet || (git commit -m "Sync galleries from Lightroom" && git push)
-
-      # Resized images are cached between runs so only new photos get processed.
-      - uses: actions/cache@v6
-        with:
-          path: _site/img
-          key: img-${{ hashFiles('content/galleries/**') }}
-          restore-keys: img-
+        run: npm run sync
 
       - id: pages
         uses: actions/configure-pages@v6
@@ -71,6 +71,15 @@ jobs:
       - run: npm run build
         env:
           PATH_PREFIX: ${{ steps.pages.outputs.base_path }}/
+
+      - name: Save photos for the next run
+        if: ${{ !cancelled() }}
+        uses: actions/cache/save@v6
+        with:
+          path: |
+            content/lightroom
+            _site/img
+          key: site-${{ github.run_id }}
 
       - uses: actions/upload-pages-artifact@v5
         with:

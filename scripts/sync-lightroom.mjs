@@ -1,5 +1,5 @@
 // Pulls public Lightroom shared albums (listed in content/lightroom.yml) into
-// content/galleries/<slug>/ as numbered JPEGs with title + caption embedded.
+// content/lightroom/<slug>/ (not committed to git; the publish workflow caches it) as numbered JPEGs with title + caption embedded.
 //
 // How: opens each share link in headless Chromium, reads the album data the
 // Lightroom web viewer itself loads, and downloads the 2048px renditions.
@@ -18,14 +18,18 @@ import sharp from "sharp";
 import { chromium } from "playwright";
 
 const CONFIG = "content/lightroom.yml";
-const OUT = "content/galleries";
+const OUT = "content/lightroom";
 const MANIFEST = ".lightroom.json"; // per-gallery record of what was synced
 const SIZES = ["2048", "1280", "640"]; // preferred rendition, then fallbacks
 
 const only = process.argv[2];
 const conf = yaml.load(await fs.readFile(CONFIG, "utf8")) || {};
 const albums = (conf.albums || []).filter((a) => a && a.url && a.slug && (!only || a.slug === only));
-if (!albums.length) { console.log("No Lightroom albums listed in content/lightroom.yml. Nothing to sync."); process.exit(0); }
+if (!albums.length) {
+  if (!only) await fs.rm(OUT, { recursive: true, force: true });
+  console.log("No Lightroom albums listed in content/lightroom.yml. Nothing to sync.");
+  process.exit(0);
+}
 
 const stripGuard = (t) => t.replace(/^\s*while\s*\(\s*1\s*\)\s*\{\s*\}\s*/, "");
 const parseJSON = (t) => { try { return JSON.parse(stripGuard(t)); } catch { return null; } };
@@ -104,6 +108,14 @@ async function readAlbum(page, url) {
   // Lightroom's order keys compare as plain strings ("9---0" < "9---1").
   if (assets.some((a) => a.order)) assets.sort((a, b) => (String(a.order) < String(b.order) ? -1 : String(a.order) > String(b.order) ? 1 : 0));
   return { albumName, coverId, assets };
+}
+
+// Albums no longer listed in lightroom.yml leave the site.
+if (!only) {
+  const listed = new Set(albums.map((a) => a.slug));
+  for (const d of await fs.readdir(OUT, { withFileTypes: true }).catch(() => [])) {
+    if (d.isDirectory() && !listed.has(d.name)) { await fs.rm(path.join(OUT, d.name), { recursive: true, force: true }); console.log(`removed ${d.name} (no longer in lightroom.yml)`); }
+  }
 }
 
 const browser = await chromium.launch(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {});

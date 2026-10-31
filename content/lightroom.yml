@@ -6,7 +6,10 @@
 #
 # Order in the album = order on the site. Title and Caption you type in
 # Lightroom's Info panel become each photo's title and caption.
-# Remove an entry to stop syncing that album (its photos stay until you delete the folder).
+# Photos are downloaded at publish time and never committed to git. Remove an entry and the
+# album disappears from the site on the next publish. To build locally with these albums:
+#   npx playwright install chromium   (once)
+#   npm run sync
 
 albums:
   - slug: polina-tereshina-macedonia-2023

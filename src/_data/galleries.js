@@ -13,7 +13,9 @@ import * as yaml from "js-yaml";
 import exifr from "exifr";
 import Image from "@11ty/eleventy-img";
 
-const ROOT = "content/galleries";
+// content/galleries: folders you add yourself (committed to git).
+// content/lightroom: albums pulled by `npm run sync` (not in git; cached by the publish workflow).
+const ROOTS = ["content/galleries", "content/lightroom"];
 const WIDTHS = [480, 960, 1600, 2400];
 const IMG_EXT = /\.(jpe?g|png|webp|tiff?|avif)$/i;
 
@@ -43,12 +45,17 @@ async function readMeta(file) {
 
 
 export default async function () {
-  let slugs = [];
-  try { slugs = (await fs.readdir(ROOT, { withFileTypes: true })).filter((d) => d.isDirectory()).map((d) => d.name); } catch {}
+  const folders = [];
+  for (const root of ROOTS) {
+    try {
+      for (const d of await fs.readdir(root, { withFileTypes: true })) if (d.isDirectory()) folders.push({ root, slug: d.name });
+    } catch {}
+  }
 
   const galleries = [];
-  for (const slug of slugs) {
-    const dir = path.join(ROOT, slug);
+  for (const { root, slug } of folders) {
+    if (galleries.some((g) => g.slug === slug)) { console.warn(`[galleries] "${slug}" exists in more than one folder; using the first.`); continue; }
+    const dir = path.join(root, slug);
     let conf = {};
     try { conf = yaml.load(await fs.readFile(path.join(dir, "gallery.yml"), "utf8")) || {}; } catch {}
     if (conf.hidden) continue;
@@ -66,7 +73,7 @@ export default async function () {
           formats: ["avif", "webp", "jpeg"],
           outputDir: "_site/img/",
           urlPath: "/img/",
-          filenameFormat: (id, s, width, format) => `${slug}-${path.parse(f).name}-${width}.${format}`,
+          filenameFormat: (id, s, width, format) => `${slug}-${path.parse(f).name}-${id.slice(0, 8)}-${width}.${format}`,
           sharpJpegOptions: { quality: 82, mozjpeg: true },
           sharpWebpOptions: { quality: 80 },
           sharpAvifOptions: { quality: 60, effort: 2 },

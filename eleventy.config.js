@@ -20,6 +20,17 @@ export default function (eleventyConfig) {
 
   eleventyConfig.addGlobalData("build", () => ({ year: new Date().getFullYear() }));
 
+  // Delete resized images that no page references any more (removed or re-edited photos).
+  eleventyConfig.on("eleventy.after", async ({ results, dir }) => {
+    const fs = await import("node:fs/promises");
+    const html = results.map((r) => r.content || "").join("\n");
+    let removed = 0;
+    for (const f of await fs.readdir(`${dir.output}/img`).catch(() => [])) {
+      if (!html.includes(`/img/${f}`)) { await fs.rm(`${dir.output}/img/${f}`); removed++; }
+    }
+    if (removed) console.log(`[img] removed ${removed} unused image files`);
+  });
+
   return {
     dir: { input: "src", output: "_site", includes: "_includes", data: "_data" },
     templateFormats: ["njk", "md"],
