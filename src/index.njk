@@ -4,9 +4,15 @@ bodyClass: home
 section: index
 ---
 {% set first = galleries[0] %}
+{% if first and first.cover.edge %}<style>body.home { --fog: {{ first.cover.edge.bg }}; --graphite: {{ first.cover.edge.text }}; --ash: {{ first.cover.edge.muted }}; --top: {{ first.cover.edge.top }}; }</style>
+<div class="backdrop" aria-hidden="true">
+  <div class="backdrop-layer is-on" style="--g: {{ first.cover.edge.gradient }}"></div>
+  <div class="backdrop-layer"></div>
+</div>{% endif %}
 <section class="stage" aria-hidden="true">
   {% for g in galleries %}
   <img class="stage-img{% if loop.first %} is-on{% endif %}" data-for="{{ g.slug }}"
+       {% if g.cover.edge %}data-bg="{{ g.cover.edge.bg }}" data-text="{{ g.cover.edge.text }}" data-muted="{{ g.cover.edge.muted }}" data-top="{{ g.cover.edge.top }}" data-gradient="{{ g.cover.edge.gradient }}"{% endif %}
        src="{{ g.cover.fallback }}" srcset="{{ g.cover.sources.jpeg }}" sizes="60vw"
        width="{{ g.cover.width }}" height="{{ g.cover.height }}" alt="" {% if not loop.first %}loading="lazy"{% endif %}>
   {% endfor %}

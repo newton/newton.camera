@@ -4,9 +4,37 @@
 (() => {
   // Home stage
   const stageImgs = document.querySelectorAll(".stage-img");
+  const layers = document.querySelectorAll(".backdrop-layer");
+  let shown = stageImgs[0]?.dataset.for;
+  // The gradient radiates from the work's centre, wherever the layout puts it.
+  const centre = () => {
+    const img = document.querySelector(".stage-img.is-on") || stageImgs[0];
+    if (!img) return;
+    const r = img.getBoundingClientRect();
+    document.body.style.setProperty("--cx", `${r.left + r.width / 2}px`);
+    document.body.style.setProperty("--cy", `${r.top + r.height / 2 + window.scrollY}px`);
+  };
+  if (layers.length) { centre(); window.addEventListener("resize", centre); stageImgs.forEach((i) => i.addEventListener("load", centre)); }
   document.querySelectorAll("[data-stage]").forEach((a) => {
-    const on = () => stageImgs.forEach((img) => img.classList.toggle("is-on", img.dataset.for === a.dataset.stage));
-    a.addEventListener("mouseenter", on);
+    const on = () => stageImgs.forEach((img) => {
+      const match = img.dataset.for === a.dataset.stage;
+      img.classList.toggle("is-on", match);
+      // the page takes on the color around the work's edge, so it floats
+      if (match && img.dataset.bg && shown !== img.dataset.for) {
+        shown = img.dataset.for;
+        if (layers.length === 2) {           // crossfade: paint the hidden layer, then swap
+          const [on, off] = layers[0].classList.contains("is-on") ? layers : [layers[1], layers[0]];
+          off.style.setProperty("--g", img.dataset.gradient);
+          on.classList.remove("is-on"); off.classList.add("is-on");
+        }
+        const s = document.body.style;
+        s.setProperty("--fog", img.dataset.bg);
+        s.setProperty("--graphite", img.dataset.text);
+        s.setProperty("--ash", img.dataset.muted);
+        s.setProperty("--top", img.dataset.top);
+      }
+    });
+    a.addEventListener("mouseenter", () => { on(); centre(); });
     a.addEventListener("focus", on);
   });
 
