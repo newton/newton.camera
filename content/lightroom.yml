@@ -11,11 +11,23 @@
 #   npx playwright install chromium   (once)
 #   npm run sync
 
+# Only photos with this color label are published. Delete the line to publish every photo.
+# An album entry can override it with its own `only_label:` (or `only_label: ""` for all photos).
+only_label: green
+
 albums:
   - slug: polina-tereshina-macedonia-2023
     url: https://adobe.ly/3RXtJvi
     # title defaults to the album name: "Polina Tereshina, Macedonia Institute residency, 2023"
     year: 2023
+
+  - url: https://adobe.ly/3mYw7Vp
+    slug: david-e-kearns
+    year: 2023
+
+  - url: https://adobe.ly/3J2oRiZ
+    slug: rob-katkowski
+
 
 # More albums follow the same pattern:
 #  - slug: joe-feddersen                         # folder name and URL: /work/joe-feddersen/

@@ -105,9 +105,12 @@ export default async function () {
 
     // A title or copyright line that every photo shares (e.g. one applied on import)
     // describes the gallery, not the photo: show it once, not on every plate.
-    const shared = (k) => (photos.length > 1 && photos.every((p) => p[k] && p[k] === photos[0][k]) ? photos[0][k] : "");
-    if (shared("title")) photos.forEach((p) => (p.title = ""));
-    const credit = conf.credit ?? shared("rights");
+    const sharedBy = (k, min) => (photos.length >= min && photos.every((p) => p[k] && p[k] === photos[0][k]) ? photos[0][k] : "");
+    if (sharedBy("title", 2)) photos.forEach((p) => (p.title = ""));
+    // A "title" that just repeats the copyright line ("Polina Tereshina 2023" / "© Polina Tereshina 2023")
+    // is a name stamp, not the artwork's title.
+    photos.forEach((p) => { if (p.title && p.rights && p.title === p.rights.replace(/^\s*(©|\(c\)|copyright)\s*/i, "")) p.title = ""; });
+    const credit = conf.credit ?? sharedBy("rights", 1);
 
     const cover = photos.find((p) => p.file === conf.cover) || photos[0];
     const title = conf.title || slug.replace(/-/g, " ");

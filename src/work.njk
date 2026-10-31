@@ -18,7 +18,7 @@ eleventyComputed:
     {% if g.project %}<p class="project-line">{{ g.project }}</p>{% endif %}
     {% if g.description %}<p class="record-desc">{{ g.description }}</p>{% endif %}
     <p class="record-meta">
-      {{ g.photos.length }} photographs{% if g.year and (g.year | string) not in g.project %}, {{ g.year }}{% endif %}.
+      {{ g.photos.length }} photograph{{ "s" if g.photos.length != 1 }}{% if g.year and (g.year | string) not in g.project %}, {{ g.year }}{% endif %}.
       {% if g.credit %}Artwork {{ g.credit }}.{% endif %}
       Photographed by {{ site.name }}.
     </p>

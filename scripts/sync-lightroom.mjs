@@ -24,6 +24,8 @@ const SIZES = ["2048", "1280", "640"]; // preferred rendition, then fallbacks
 
 const only = process.argv[2];
 const conf = yaml.load(await fs.readFile(CONFIG, "utf8")) || {};
+// Optional: publish only photos with this Lightroom color label (e.g. "green"). Per album, `only_label:` overrides it.
+const onlyLabel = conf.only_label;
 const albums = (conf.albums || []).filter((a) => a && a.url && a.slug && (!only || a.slug === only));
 if (!albums.length) {
   if (!only) await fs.rm(OUT, { recursive: true, force: true });
@@ -57,6 +59,7 @@ export function readAsset(r, base) {
     title: pick(x.dc?.title),
     caption: pick(x.dc?.description),
     rights: pick(x.dc?.rights),
+    label: String(x.photoshop?.LabelColor || x.xmp?.Label || "").toLowerCase(),
     captured: a.payload?.captureDate || "",
     url,
   };
@@ -126,8 +129,16 @@ for (const album of albums) {
   const page = await browser.newPage({ viewport: { width: 1400, height: 1000 } });
   try {
     console.log(`\n${album.slug}: reading ${album.url}`);
-    const { albumName, coverId, assets } = await readAlbum(page, album.url);
-    if (!assets.length) throw new Error("Found no photos. Check the album's link access is set to \"Anyone can view\", or Adobe changed the viewer — use the export-folder route meanwhile.");
+    const { albumName, coverId, assets: all } = await readAlbum(page, album.url);
+    if (!all.length) throw new Error("Found no photos. Check the album's link access is set to \"Anyone can view\", or Adobe changed the viewer — use the export-folder route meanwhile.");
+    const want = String(album.only_label ?? onlyLabel ?? "").toLowerCase().trim();
+    const assets = want ? all.filter((a) => a.label === want) : all;
+    if (want) console.log(`  ${assets.length} of ${all.length} photos labelled ${want}`);
+    if (!assets.length) {
+      await fs.rm(dir, { recursive: true, force: true });
+      console.log(`  left off the site: no photos labelled ${want}`);
+      continue;
+    }
 
     let manifest = {};
     try { manifest = JSON.parse(await fs.readFile(path.join(dir, MANIFEST), "utf8")); } catch {}
