@@ -18,14 +18,31 @@ only_label: green
 albums:
   - slug: polina-tereshina-macedonia-2023
     url: https://adobe.ly/3RXtJvi
-    # title defaults to the album name: "Polina Tereshina, Macedonia Institute residency, 2023"
     sort: 1
+    links:
+      - https://www.polinabertou.com
+      - https://www.instagram.com/polinabertou/
+    represented_by:
+      - name: studio e gallery
+        links:
+          - https://studioegallery.net
+          - https://www.instagram.com/studioegallery
+
 
   - url: https://adobe.ly/3mYw7Vp
     slug: david-e-kearns
+    represented_by:
+      - name: studio e gallery
+        links:
+          - https://studioegallery.net
+          - https://www.instagram.com/studioegallery
 
   - url: https://adobe.ly/3J2oRiZ
     slug: rob-katkowski
+    links:
+      - https://katkowski.com
+      - https://www.instagram.com/robkatkowski
+
 
 
 # More albums follow the same pattern:
@@ -38,3 +55,11 @@ albums:
 #    project: Retrospective catalog              # optional, defaults to the rest of the album name
 #    sort: 1                                     # optional, position in the index (lower comes first)
 #    hidden: true                                # optional, keep syncing but leave it off the site
+#    links:                                      # optional, the artist's links (shown on the gallery page)
+#      - https://www.instagram.com/joefeddersen
+#      - https://joefeddersen.com
+#    represented_by:                             # optional, the artist's gallery (or a list of them)
+#      - name: Froelick Gallery
+#        links:
+#          - https://froelickgallery.com          # a plain website becomes the link on the name
+#          - https://www.instagram.com/froelickgallery

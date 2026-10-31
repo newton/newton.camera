@@ -91,6 +91,12 @@ main { padding: 0 var(--edge); }
 .project-line { color: var(--ash); margin: 0 0 1.5rem; }
 .record-desc { margin-bottom: 1.5rem; }
 .record-meta { color: var(--ash); }
+.record-links { margin: 1.25rem 0 0; display: grid; gap: .15rem; }
+.record-links div { display: grid; grid-template-columns: 8.5rem minmax(0, 1fr); gap: 1rem; }
+.record-links dt { color: var(--ash); }
+.record-links dd { margin: 0; display: flex; flex-wrap: wrap; gap: 0 1rem; }
+.record-links a { text-decoration: underline; text-decoration-color: var(--hair); text-underline-offset: .2em; }
+.record-links a:hover { text-decoration-color: currentColor; }
 .views { display: flex; gap: 1.25rem; margin: 1.5rem 0 0; }
 .views a { color: var(--ash); }
 .views a[aria-current="true"] { color: var(--graphite); }
@@ -166,4 +172,7 @@ body.home .colophon { display: none; }
   .r-project { display: none; }
   .plate figure { width: 100%; }
   .lb-caption { max-width: 55%; }
+  /* on small screens the corner label gets its own strip instead of sitting on the work */
+  .wall-label { left: 0; right: 0; bottom: 0; padding: .55rem var(--edge); background: var(--fog); }
+  .plate { padding-bottom: 3.5rem; }
 }

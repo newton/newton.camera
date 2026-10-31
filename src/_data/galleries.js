@@ -15,6 +15,40 @@ import Image from "@11ty/eleventy-img";
 
 // content/galleries: folders you add yourself (committed to git).
 // content/lightroom: albums pulled by `npm run sync` (not in git; cached by the publish workflow).
+// Links: a list of URLs (or {label, url}). Known sites get their name; anything else is "Website".
+const SITES = [
+  [/(^|\.)instagram\.com$/, "Instagram"], [/(^|\.)facebook\.com$/, "Facebook"], [/(^|\.)threads\.(net|com)$/, "Threads"],
+  [/(^|\.)(x|twitter)\.com$/, "X"], [/(^|\.)bsky\.app$/, "Bluesky"], [/(^|\.)tiktok\.com$/, "TikTok"],
+  [/(^|\.)youtube\.com$|^youtu\.be$/, "YouTube"], [/(^|\.)vimeo\.com$/, "Vimeo"], [/(^|\.)linkedin\.com$/, "LinkedIn"],
+  [/(^|\.)artsy\.net$/, "Artsy"], [/(^|\.)substack\.com$/, "Substack"],
+];
+function normalizeLinks(list) {
+  const out = [];
+  for (const item of [].concat(list || [])) {
+    let url = typeof item === "string" ? item : item?.url;
+    if (!url) continue;
+    url = String(url).trim();
+    if (/^@[\w.]+$/.test(url)) url = `https://www.instagram.com/${url.slice(1)}/`; // "@handle" means Instagram
+    if (!/^https?:\/\//i.test(url)) url = `https://${url}`;
+    let host = "";
+    try { host = new URL(url).hostname.replace(/^www\./, ""); } catch { continue; }
+    const known = SITES.find(([re]) => re.test(host));
+    out.push({ url, label: (typeof item === "object" && item.label) || (known ? known[1] : "Website"), host });
+  }
+  return out;
+}
+// represented_by: one gallery or a list. Each is a name, or {name, links}.
+function normalizeRepresentation(value) {
+  return [].concat(value || []).map((g) => {
+    if (typeof g === "string") return { name: g, url: "", links: [] };
+    if (!g?.name) return null;
+    const links = normalizeLinks(g.links || g.url);
+    // The gallery's own website is linked from its name; other links follow.
+    const home = links.find((l) => l.label === "Website");
+    return { name: g.name, url: home?.url || "", links: links.filter((l) => l !== home) };
+  }).filter(Boolean);
+}
+
 const ROOTS = ["content/galleries", "content/lightroom"];
 const WIDTHS = [480, 960, 1600, 2400];
 const IMG_EXT = /\.(jpe?g|png|webp|tiff?|avif)$/i;
@@ -123,6 +157,8 @@ export default async function () {
       year: conf.year || "",
       description: conf.description || "",
       credit,
+      links: normalizeLinks(conf.links),
+      representedBy: normalizeRepresentation(conf.represented_by ?? conf.gallerist),
       sort: conf.sort ?? null,
       cover,
       photos,

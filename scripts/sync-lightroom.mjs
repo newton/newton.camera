@@ -175,10 +175,12 @@ for (const album of albums) {
       year: album.year, description: album.description,
       artist: album.artist, project: album.project,
       sort: album.sort, hidden: album.hidden, credit: album.credit,
+      links: album.links, represented_by: album.represented_by ?? album.gallerist,
       cover: album.cover || (coverId && next[coverId] ? next[coverId].file : undefined),
     };
     for (const [k, v] of Object.entries(managed)) { if (v !== undefined && v !== null && v !== "" && v !== false) g[k] = v; else delete g[k]; }
     delete g.order; // album order wins for synced galleries
+    delete g.gallerist; // older name for represented_by
     await fs.writeFile(gy, yaml.dump(g, { lineWidth: 100 }));
     console.log(`  ${assets.length} photos in sync`);
   } catch (e) {
