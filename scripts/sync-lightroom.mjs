@@ -144,14 +144,17 @@ for (const album of albums) {
     const gy = path.join(dir, "gallery.yml");
     let g = {};
     try { g = yaml.load(await fs.readFile(gy, "utf8")) || {}; } catch {}
-    g.title = album.title || g.title || albumName || album.slug;
-    if (album.year) g.year = album.year;
-    if (album.description) g.description = album.description;
-    if (album.artist) g.artist = album.artist;
-    if (album.project) g.project = album.project;
+    // For a synced gallery, Lightroom and content/lightroom.yml are the source of truth:
+    // these keys are rewritten on every sync, so a renamed album or an edited entry shows up.
+    // Any other keys you add to gallery.yml by hand (sort, hidden, credit…) are kept.
+    const managed = {
+      title: album.title || albumName || album.slug,
+      year: album.year, description: album.description,
+      artist: album.artist, project: album.project,
+      cover: album.cover || (coverId && next[coverId] ? next[coverId].file : undefined),
+    };
+    for (const [k, v] of Object.entries(managed)) { if (v) g[k] = v; else delete g[k]; }
     delete g.order; // album order wins for synced galleries
-    if (coverId && next[coverId] && !album.cover) g.cover = next[coverId].file;
-    if (album.cover) g.cover = album.cover;
     await fs.writeFile(gy, yaml.dump(g, { lineWidth: 100 }));
     console.log(`  ${assets.length} photos in sync`);
   } catch (e) {
