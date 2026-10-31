@@ -15,13 +15,15 @@ import Image from "@11ty/eleventy-img";
 
 // content/galleries: folders you add yourself (committed to git).
 // content/lightroom: albums pulled by `npm run sync` (not in git; cached by the publish workflow).
-// Links: a list of URLs (or {label, url}). Known sites get their name; anything else is "Website".
-const SITES = [
-  [/(^|\.)instagram\.com$/, "Instagram"], [/(^|\.)facebook\.com$/, "Facebook"], [/(^|\.)threads\.(net|com)$/, "Threads"],
-  [/(^|\.)(x|twitter)\.com$/, "X"], [/(^|\.)bsky\.app$/, "Bluesky"], [/(^|\.)tiktok\.com$/, "TikTok"],
-  [/(^|\.)youtube\.com$|^youtu\.be$/, "YouTube"], [/(^|\.)vimeo\.com$/, "Vimeo"], [/(^|\.)linkedin\.com$/, "LinkedIn"],
-  [/(^|\.)artsy\.net$/, "Artsy"], [/(^|\.)substack\.com$/, "Substack"],
-];
+// Links: a list of URLs (or {label, url}). Shown the way people write them:
+// Instagram and Bluesky as @handle, everything else as a clean address (polinabertou.com, x.com/polina).
+function displayLink(u) {
+  const host = u.hostname.replace(/^www\./, "");
+  const parts = u.pathname.split("/").filter(Boolean);
+  if (/(^|\.)instagram\.com$/.test(host) && parts[0]) return `@${parts[0]}`;
+  if (/(^|\.)bsky\.app$/.test(host) && parts[0] === "profile" && parts[1]) return `@${parts[1]}`;
+  return host + (parts.length ? `/${parts.join("/")}` : "");
+}
 function normalizeLinks(list) {
   const out = [];
   for (const item of [].concat(list || [])) {
@@ -30,22 +32,18 @@ function normalizeLinks(list) {
     url = String(url).trim();
     if (/^@[\w.]+$/.test(url)) url = `https://www.instagram.com/${url.slice(1)}/`; // "@handle" means Instagram
     if (!/^https?:\/\//i.test(url)) url = `https://${url}`;
-    let host = "";
-    try { host = new URL(url).hostname.replace(/^www\./, ""); } catch { continue; }
-    const known = SITES.find(([re]) => re.test(host));
-    out.push({ url, label: (typeof item === "object" && item.label) || (known ? known[1] : "Website"), host });
+    let parsed;
+    try { parsed = new URL(url); } catch { continue; }
+    out.push({ url, label: (typeof item === "object" && item.label) || displayLink(parsed) });
   }
   return out;
 }
 // represented_by: one gallery or a list. Each is a name, or {name, links}.
 function normalizeRepresentation(value) {
   return [].concat(value || []).map((g) => {
-    if (typeof g === "string") return { name: g, url: "", links: [] };
+    if (typeof g === "string") return { name: g, links: [] };
     if (!g?.name) return null;
-    const links = normalizeLinks(g.links || g.url);
-    // The gallery's own website is linked from its name; other links follow.
-    const home = links.find((l) => l.label === "Website");
-    return { name: g.name, url: home?.url || "", links: links.filter((l) => l !== home) };
+    return { name: g.name, links: normalizeLinks(g.links || g.url) };
   }).filter(Boolean);
 }
 

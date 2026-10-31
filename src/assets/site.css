@@ -91,12 +91,13 @@ main { padding: 0 var(--edge); }
 .project-line { color: var(--ash); margin: 0 0 1.5rem; }
 .record-desc { margin-bottom: 1.5rem; }
 .record-meta { color: var(--ash); }
-.record-links { margin: 1.25rem 0 0; display: grid; gap: .15rem; }
+.record-links { margin: 1.5rem 0 0; display: grid; gap: .75rem; }
 .record-links div { display: grid; grid-template-columns: 8.5rem minmax(0, 1fr); gap: 1rem; }
 .record-links dt { color: var(--ash); }
-.record-links dd { margin: 0; display: flex; flex-wrap: wrap; gap: 0 1rem; }
-.record-links a { text-decoration: underline; text-decoration-color: var(--hair); text-underline-offset: .2em; }
-.record-links a:hover { text-decoration-color: currentColor; }
+.record-links dd { margin: 0; }
+.record-links ul { list-style: none; margin: 0; padding: 0; }
+.record-links a { overflow-wrap: anywhere; }
+.record-links a:hover { text-decoration: underline; text-underline-offset: .2em; }
 .views { display: flex; gap: 1.25rem; margin: 1.5rem 0 0; }
 .views a { color: var(--ash); }
 .views a[aria-current="true"] { color: var(--graphite); }
