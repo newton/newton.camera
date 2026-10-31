@@ -16,12 +16,13 @@
 only_label: green
 
 albums:
-  - slug: polina-bertou--macedonia-2023
+  - slug: polina-bertou-macedonia-2023
     url: https://adobe.ly/3RXtJvi
+    artist: Polina Bertou
     sort: 1
     links:
       - https://www.polinabertou.com
-      - https://www.instagram.com/polinabertou/
+      - https://www.instagram.com/polinabertou
     represented_by:
       - name: studio e gallery
         links:
@@ -31,6 +32,7 @@ albums:
 
   - url: https://adobe.ly/3mYw7Vp
     slug: david-e-kearns
+    artist: David E. Kearns
     represented_by:
       - name: studio e gallery
         links:
@@ -39,6 +41,7 @@ albums:
 
   - url: https://adobe.ly/3J2oRiZ
     slug: rob-katkowski
+    artist: Rob Katkowski
     links:
       - https://katkowski.com
       - https://www.instagram.com/robkatkowski
