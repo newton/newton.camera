@@ -23,16 +23,18 @@ eleventyComputed:
       Photographed by {{ site.name }}.
     </p>
     {% if g.links.length or g.representedBy.length %}
-    <dl class="record-links">
+    <div class="record-links">
       {% if g.links.length %}
-      <div><dt>Artist</dt><dd><span class="runon">{% for l in g.links %}<a href="{{ l.url }}" rel="noopener">{{ l.label }}</a>{% endfor %}</span></dd></div>
+      <p class="artist-links"><span class="sr">{{ g.artist }} online: </span><span class="runon">{% for l in g.links %}<a href="{{ l.url }}" rel="noopener">{{ l.label }}</a>{% endfor %}</span></p>
       {% endif %}
       {% if g.representedBy.length %}
+      <dl>
       <div><dt>Represented by</dt><dd>
         {% for r in g.representedBy %}<span class="gallery-credit-line">{{ r.name }}{% if r.links.length %} <span class="runon paren">{% for l in r.links %}<a href="{{ l.url }}" rel="noopener">{{ l.label }}</a>{% endfor %}</span>{% endif %}</span>{% endfor %}
       </dd></div>
+      </dl>
       {% endif %}
-    </dl>
+    </div>
     {% endif %}
     <p class="views" role="group" aria-label="View">
       <a href="#plates" data-view-link="plates" aria-current="true">Plates</a>
