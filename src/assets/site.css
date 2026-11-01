@@ -166,24 +166,7 @@ main { padding: 0 var(--edge); }
 .colophon p { margin: 0 0 .2rem; }
 body.home .colophon { display: none; }
 
-/* home: the page takes on the colors around the work's edge, radiating from its centre */
-.backdrop { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
-.backdrop-layer {
-  position: absolute; inset: -80px; opacity: 0; transition: opacity var(--slow);   /* oversized so the blur has no faded edge */
-  background: conic-gradient(from 0deg at calc(var(--cx, 50vw) + 80px) calc(var(--cy, 42vh) + 80px), var(--g, transparent));
-  filter: blur(40px);   /* softens the seams between rays */
-}
-.backdrop-layer.is-on { opacity: 1; }
-body.home { position: relative; min-height: 100vh; }
-.home .masthead, .home .masthead nav a { color: var(--top, var(--graphite)); }
-.home .masthead nav a:not([aria-current]) { opacity: .72; }
-.home .masthead nav a:hover { opacity: 1; }
-/* home: background and text ease to each work's edge color along with the image crossfade */
-body.home, .home .masthead a, .home .statement, .home .r-project, .home .r-count { transition: background-color var(--slow), color var(--slow); }
-.home .records a { transition: opacity .3s, color var(--slow); }
-
 @media (prefers-reduced-motion: reduce) {
-  body.home, .home .masthead a, .home .statement, .home .r-project, .home .r-count, .backdrop-layer { transition: none; }
   .stage-img, .plate-img img, .records a { transition: none; }
 }
 
